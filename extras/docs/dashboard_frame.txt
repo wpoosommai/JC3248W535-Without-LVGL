@@ -1,0 +1,28 @@
+ตำแหน่งแสดงข้อมูล
+Air Temp  	45,115
+Humidity	125,115
+Soil Moisture	230,115
+
+Water Level	50,180
+Light Level	128,180
+pH		245,155
+EC. 1.8 mS/cm	215,190
+
+Greenhouse Temp	60,270
+Ext. Greenhouse Temp	200,270
+
+พื้นที่แสดง iCons
+CONTROL & MENU
+มุมบนซ้าย 20,350	มุมบนขวา 300,350
+มุมล่างซ้าย 20,391	มุมล่างขวา 300,391
+
+ตำแหน่งวาง icons
+10,360 fan_on.jpg fan_off.jpg
+75,360	pump_on.jpg pump_off.jpg	10+50+15
+140,360 mist_on.jpg mist_off.jpg	75+50+15
+205,360 light_on.jpg light_off.jpg	140+50+15
+260,360 gallery.jpg
+
+
+
+		

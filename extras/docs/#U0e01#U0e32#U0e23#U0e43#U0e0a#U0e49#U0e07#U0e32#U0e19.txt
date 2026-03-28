@@ -1,0 +1,109 @@
+สำหรับโปรแกรม `IoTAGIAppV49.ino` ไลบรารี Arduino ที่ใช้ มีดังนี้
+
+1. ไลบรารีมาตรฐานของ ESP32 / Arduino
+   1.1 `WiFi.h`
+   ใช้เชื่อมต่อเครือข่าย WiFi
+
+   1.2 `WiFiClient.h`
+   ใช้เป็น client socket สำหรับงานเครือข่าย
+
+   1.3 `HTTPClient.h`
+   ใช้ดาวน์โหลดไฟล์ภาพและข้อมูลจาก URL เช่น
+   `dashboard_frame.jpg` และ `slideshow_list_api.php`
+
+   1.4 `Wire.h`
+   ใช้สื่อสารแบบ I2C กับ touch controller
+
+   1.5 `pgmspace.h`
+   ใช้เก็บข้อมูลคงที่ไว้ใน Flash/PROGMEM
+
+   1.6 `math.h`
+   ใช้ฟังก์ชันคณิตศาสตร์ทั่วไป
+
+2. ไลบรารีภายนอกที่ต้องติดตั้งเพิ่ม
+   2.1 `PubSubClient.h`
+   ไลบรารี MQTT สำหรับ publish / subscribe
+   ใช้สื่อสารกับ MQTT Broker
+
+   2.2 `Arduino_GFX_Library.h`
+   ไลบรารีหลักสำหรับขับจอ LCD
+   ในโปรแกรมนี้ใช้กับจอ 320x480 และ driver `AXS15231B`
+
+   2.3 `JPEGDecoder.h`
+   ใช้ถอดรหัสไฟล์ JPEG เพื่อแสดงภาพบนจอ
+   เช่นภาพ overlay และภาพ slideshow
+
+3. ไฟล์ประกอบที่โปรแกรมอ้างอิง
+   ส่วนนี้ไม่ใช่ไลบรารีมาตรฐานจาก Library Manager โดยตรง แต่โปรแกรมต้องมีไฟล์เหล่านี้ด้วย
+
+   3.1 `"Roboto_Regular16pt7b.h"`
+   ฟอนต์สำหรับแสดงข้อความบนหน้าจอ
+
+   3.2 `<icons_rgb565_V1.h>`
+   ไฟล์เก็บ icon แบบ RGB565 สำหรับแสดงผลกราฟิก
+
+4. สรุปว่า “ต้องติดตั้งอะไรบ้าง”
+   ถ้าจะคอมไพล์โปรแกรมนี้ให้ผ่าน ควรมีอย่างน้อย
+
+   4.1 Arduino ESP32 Board Package
+   4.2 PubSubClient
+   4.3 Arduino GFX Library
+   4.4 JPEGDecoder
+   4.5 ไฟล์ฟอนต์ `Roboto_Regular16pt7b.h`
+   4.6 ไฟล์ไอคอน `icons_rgb565_V1.h`
+
+5. แหล่งที่มาเชิงใช้งาน
+   5.1 ติดตั้งผ่าน Library Manager ได้ทันที
+
+   * PubSubClient
+   * Arduino GFX Library
+   * JPEGDecoder
+
+   5.2 มาพร้อม Board Package / Arduino Core
+
+   * WiFi
+   * WiFiClient
+   * HTTPClient
+   * Wire
+
+   5.3 ต้องวางไฟล์เองในโฟลเดอร์โปรเจกต์หรือ libraries
+
+   * Roboto_Regular16pt7b.h
+   * icons_rgb565_V1.h
+
+6. ข้อควรระวัง
+   6.1 ถ้าขาด `Roboto_Regular16pt7b.h` โปรแกรมจะคอมไพล์ไม่ผ่าน
+   6.2 ถ้าขาด `icons_rgb565_V1.h` โปรแกรมจะคอมไพล์ไม่ผ่าน
+   6.3 ถ้าใช้ Arduino_GFX_Library คนละเวอร์ชัน บางฟังก์ชันอาจแสดงผลไม่ตรง
+   6.4 ต้องเลือกบอร์ด ESP32-S3 และเปิด PSRAM ให้ถูกต้อง
+
+7. รายการสรุปแบบสั้น
+
+```text
+ใช้จริงในโค้ด:
+- WiFi
+- WiFiClient
+- HTTPClient
+- PubSubClient
+- Arduino_GFX_Library
+- Wire
+- JPEGDecoder
+- math
+- pgmspace
+
+ไฟล์ประกอบ:
+- Roboto_Regular16pt7b.h
+- icons_rgb565_V1.h
+```
+
+ข้อเสนอแนะถัดไป
+ข้าพเจ้าสามารถจัดทำให้ต่อได้อีก 2 แบบ คือ
+
+1. ไฟล์ `libraries_required.txt` สำหรับใส่ใน GitHub
+2. คู่มือติดตั้งไลบรารีทีละขั้นใน Arduino IDE สำหรับโปรแกรมนี้โดยเฉพาะ
+
+สรุปย่อ 3–5 บรรทัด
+โปรแกรมนี้ใช้ไลบรารีหลัก 3 ตัวที่ต้องติดตั้งเพิ่ม คือ `PubSubClient`, `Arduino_GFX_Library`, และ `JPEGDecoder`
+ส่วน `WiFi`, `HTTPClient`, `Wire` เป็นของชุด ESP32/Arduino อยู่แล้ว
+นอกจากนี้ยังต้องมีไฟล์ฟอนต์และไฟล์ไอคอนประกอบ มิฉะนั้นคอมไพล์ไม่ผ่าน
+การจัดการ dependency ให้ครบตั้งแต่ต้นจะช่วยลดเวลาแก้ error และทำให้พัฒนาระบบได้เร็วขึ้นมาก

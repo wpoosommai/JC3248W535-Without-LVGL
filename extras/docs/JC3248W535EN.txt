@@ -1,0 +1,176 @@
+Hardware ที่ระบุอยู่ในโปรแกรม `IoTAGIAppV49.ino` มีดังนี้
+
+1. บอร์ดหลัก
+   ใช้บอร์ด **ESP32-S3 + JC3248W535** เป็นแกนหลักของระบบ
+   หน้าที่คือควบคุมจอภาพ ระบบสัมผัส WiFi การสื่อสาร MQTT และการแสดงผล Dashboard
+
+2. จอแสดงผล
+   ใช้จอ **LCD ขนาด 320×480 พิกเซล**
+   ไดรเวอร์จอที่โปรแกรมระบุคือ **AXS15231B**
+   โปรแกรมสร้างจอผ่าน `Arduino_AXS15231B` และใช้ `Arduino_Canvas` เพื่อลดการกระพริบเวลาวาดหน้าจอ
+
+3. บัสจอภาพ
+   จอเชื่อมต่อแบบ **QSPI**
+   ขาที่ระบุในโปรแกรมคือ
+   3.1 `CS = GPIO45`
+   3.2 `SCK = GPIO47`
+   3.3 `D0 = GPIO21`
+   3.4 `D1 = GPIO48`
+   3.5 `D2 = GPIO40`
+   3.6 `D3 = GPIO39`
+
+4. ระบบสัมผัสหน้าจอ
+   ใช้ **Touch Controller ที่ I2C Address = 0x3B**
+   ขาที่ระบุคือ
+   4.1 `SDA = GPIO4`
+   4.2 `SCL = GPIO8`
+   4.3 `RST = GPIO12`
+   4.4 `INT = GPIO11`
+   ความถี่ I2C สำหรับทัชคือ `400000` Hz
+
+5. หน่วยความจำ/ทรัพยากรระบบ
+   โปรแกรมเปิดใช้ **PSRAM** และในหน้า System Ready จะแสดง
+   5.1 ความถี่ CPU
+   5.2 สถานะ PSRAM
+   5.3 ขนาด Flash
+   5.4 Free Heap
+   แปลว่าโปรแกรมนี้ออกแบบให้ตรวจสอบทรัพยากรฮาร์ดแวร์ของ ESP32-S3 ได้ด้วย
+
+6. แบ็กไลต์จอ
+   กำหนด `GFX_BL = 1`
+   หมายถึงมีการระบุขาแบ็กไลต์ไว้ที่ **GPIO1**
+
+7. การสื่อสารเครือข่าย
+   มีฮาร์ดแวร์สื่อสารไร้สายในตัวบอร์ดคือ **WiFi ของ ESP32-S3**
+   ใช้เชื่อมต่อ SSID `SmartAgritronics`
+   และใช้ MQTT Broker ที่ `202.29.231.205:1883`
+
+8. ฮาร์ดแวร์ภายนอกที่โปรแกรม “รองรับข้อมูล”
+   จากตัวแปรและ JSON ในโปรแกรม ระบบนี้ถูกออกแบบให้แสดงค่าจากอุปกรณ์/เซนเซอร์ต่อไปนี้
+   8.1 อุณหภูมิอากาศ `temp`
+   8.2 อุณหภูมิภายนอก `extTemp`
+   8.3 ความชื้นอากาศ `hum`
+   8.4 ความชื้นดิน `soil`
+   8.5 แสง `lux`
+   8.6 ระดับน้ำ `level`
+   8.7 ค่า `pH`
+   8.8 ค่า `EC`
+
+   แต่ต้องแยกให้ออกว่า **ไฟล์นี้ไม่ได้ระบุขาต่อของเซนเซอร์เหล่านี้บนบอร์ดโดยตรง**
+   ลักษณะของโปรแกรมคือ **รับค่ามาจาก MQTT/JSON แล้วแสดงผล** มากกว่าการอ่านเซนเซอร์ตรงในไฟล์นี้
+
+9. อุปกรณ์ควบคุมภายนอกที่ระบบรองรับ
+   โปรแกรมมีสถานะควบคุมอุปกรณ์ดังนี้
+   9.1 `FAN` พัดลม
+   9.2 `PUMP` ปั๊มน้ำ
+   9.3 `MIST` ระบบพ่นหมอก
+   9.4 `LIGHT` ไฟส่องสว่าง
+   9.5 `VENT` ระบบระบายอากาศ
+
+   อย่างไรก็ตาม ในไฟล์นี้เป็นการเก็บ **สถานะเชิงตรรกะ** และส่ง/รับผ่าน MQTT
+   ยัง **ไม่พบการกำหนด GPIO รีเลย์จริงของ FAN/PUMP/MIST/LIGHT/VENT** ภายในไฟล์นี้
+
+10. โครงสร้างฮาร์ดแวร์ที่สรุปได้จริงจากโปรแกรม
+    ถ้าสรุปเฉพาะส่วนที่ “ยืนยันได้จากโค้ด” จะได้ดังนี้
+    10.1 ESP32-S3 เป็นบอร์ดหลัก
+    10.2 LCD 320×480
+    10.3 Display Driver AXS15231B
+    10.4 Touch Controller I2C ที่ 0x3B
+    10.5 QSPI LCD Bus: 45, 47, 21, 48, 40, 39
+    10.6 Touch Pins: 4, 8, 12, 11
+    10.7 Backlight: GPIO1
+    10.8 WiFi และ MQTT เป็นช่องทางสื่อสารหลัก
+    10.9 รองรับข้อมูลเซนเซอร์และอุปกรณ์โรงเรือนหลายชนิดผ่าน MQTT
+
+11. ข้อสังเกตสำคัญ
+    โปรแกรมนี้เป็นลักษณะ **HMI / Dashboard Controller** มากกว่าไฟล์ควบคุมฮาร์ดแวร์ปลายทางทั้งหมด
+    กล่าวคือ
+    11.1 ส่วนจอและทัช ถูกกำหนดฮาร์ดแวร์ชัดเจน
+    11.2 ส่วนเซนเซอร์และรีเลย์ ถูกออกแบบให้ “รับสถานะ/ส่งคำสั่ง” ผ่าน MQTT
+    11.3 ดังนั้นถ้าต้องการสรุป “ขาต่อรีเลย์จริง” หรือ “ขาต่อเซนเซอร์จริง” ต้องดูอีกไฟล์หนึ่งที่เป็นตัวควบคุม ESP ฝั่งโรงเรือน
+
+----------------------------------------------------
+Board  : JC3248W535EN (ESP32-S3)	480X320
+Arduino LVGL
+https://www.youtube.com/watch?v=YHu5mUDxMsc
+https://github.com/AudunKodehode/JC3248W535EN-Touch-LCD
+https://github.com/moononournation/Arduino_GFX
+Main characteristics
+3.5-inch LCD-TFT capacitive touch display module with housing
+Supports WiFi and Bluetooth
+Support lithium battery power supply
+Capacitive touch
+320 * 480 screen resolution
+RGB 65K colors
+IPS glass panel
+ESP32-S3 N16R8 controller dual core CPU
+Clock frequency 240MHz
+8M PSRAM
+16M FLASH
+I2S Audio
+Speaker output
+JST 1.25 connectors
+
+-------------------------
+Code example – SD card read and write
+This module uses the standard interface pinout of an ESP2-S3 :
+CS : GPIO10
+MOSI : GPIO11
+SCLK : GPIO12
+MISO : GPIO13
+-------------------------
+//************Alternative declarations *******************************************
+// Arduino_DataBus *bus = new Arduino_ESP32QSPI(45, 47, 21, 48, 40, 39);
+// Arduino_GFX *g = new Arduino_AXS15231B(bus, GFX_NOT_DEFINED, 0, false, 320, 480);
+// Arduino_Canvas *gfx = new Arduino_Canvas(320, 480, g, 0, 0, 0);
+//*******************************************************************************
+
+Arduino_ESP32QSPI *bus = new Arduino_ESP32QSPI(45, 47, 21, 48, 40, 39);
+Arduino_AXS15231B *g = new Arduino_AXS15231B(bus, GFX_NOT_DEFINED, 0, false, 320, 480);
+Arduino_Canvas *gfx = new Arduino_Canvas(320, 480, g, 0, 0, 0);
+-----------------------------------------------------------------
+Technical Specifications
+The JC3248W535C Esp32 offers robust performance and flexibility. Below are its key technical details:
+
+General Specifications
+Parameter	Value
+Manufacturer	GUItion
+Part ID	JC3248W535
+Microcontroller	ESP32 Dual-Core Processor
+Clock Speed	Up to 240 MHz
+Flash Memory	4 MB
+SRAM	520 KB
+Wireless Connectivity	Wi-Fi 802.11 b/g/n, Bluetooth 4.2 (BLE)
+Operating Voltage	3.3V
+Power Consumption	Ultra-low power in deep sleep mode (<10 µA)
+Pin Configuration and Descriptions
+The JC3248W535C Esp32 module features a total of 38 pins. Below is the pinout description:
+
+Power Pins
+Pin Name	Description
+VIN	Input voltage (5V)
+3V3	Regulated 3.3V output
+GND	Ground
+GPIO Pins
+Pin Name	Description
+GPIO0	General-purpose I/O, boot mode selection
+GPIO2	General-purpose I/O, supports ADC and PWM
+GPIO4	General-purpose I/O, supports ADC and PWM
+GPIO5	General-purpose I/O, supports ADC and PWM
+GPIO12	General-purpose I/O, supports ADC and PWM
+GPIO13	General-purpose I/O, supports ADC and PWM
+GPIO14	General-purpose I/O, supports ADC and PWM
+GPIO15	General-purpose I/O, supports ADC and PWM
+GPIO16	General-purpose I/O
+GPIO17	General-purpose I/O
+Communication Pins
+Pin Name	Description
+TXD0	UART0 Transmit
+RXD0	UART0 Receive
+SCL	I2C Clock Line
+SDA	I2C Data Line
+MOSI	SPI Master Out, Slave In
+MISO	SPI Master In, Slave Out
+SCK	SPI Clock
+CS	SPI Chip Select
+---------------------------------------------------------

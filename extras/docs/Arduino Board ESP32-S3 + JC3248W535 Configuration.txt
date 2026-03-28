@@ -1,0 +1,31 @@
+Based on the image provided, here is a transcription of your Arduino IDE board settings. This configuration is typical for a high-performance **ESP32-S3** module (like those from Freenove, LilyGO, or Waveshare) given the specific mention of OPI PSRAM and 16MB Flash.
+---
+### **Arduino Board Configuration**
+| Setting | Value |
+| :--- | :--- |
+| **USB CDC On Boot** | "Enabled" |
+| **CPU Frequency** | "240MHz (WiFi)" |
+| **Core Debug Level** | "None" |
+| **USB DFU On Boot** | "Disabled" |
+| **Erase All Flash Before Sketch Upload** | "Disabled" |
+| **Events Run On** | "Core 1" |
+| **Flash Mode** | "QIO 120MHz" |
+| **Flash Size** | "16MB (128Mb)" |
+| **JTAG Adapter** | "Disabled" |
+| **Arduino Runs On** | "Core 1" |
+| **USB Firmware MSC On Boot** | "Disabled" |
+| **Partition Scheme** | "Huge APP (3MB No OTA/1MB SPIFFS)" |
+| **PSRAM** | "OPI PSRAM" |
+| **Upload Mode** | "UART0 / Hardware CDC" |
+| **Upload Speed** | "921600" |
+| **USB Mode** | "Hardware CDC and JTAG" |
+| **Zigbee Mode** | "Disabled" |
+
+---
+
+### **Key Takeaways for your Setup:**
+* **USB CDC On Boot:** Since this is "Enabled," your `Serial.print` statements will go directly to the built-in USB port without needing an external FTDI adapter.
+* **Memory:** You have a massive **16MB Flash** and **OPI PSRAM** enabled. Ensure your code actually initializes the PSRAM if you plan to use that extra memory for buffers or displays.
+* **Partitioning:** You are using the "Huge APP" scheme. This gives you plenty of room for large programs, but note that **OTA (Over-the-Air) updates are disabled** in this specific configuration.
+
+**Would you like me to help you write a quick test script to verify that your PSRAM and Flash are being recognized correctly by the hardware?**
