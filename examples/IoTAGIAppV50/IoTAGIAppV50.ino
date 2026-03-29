@@ -271,7 +271,9 @@ const char* iconMistOffFile   = "mist_off.jpg";
 const char* iconLightOnFile   = "light_on.jpg";
 const char* iconLightOffFile  = "light_off.jpg";
 const char* iconGalleryFile   = "gallery.jpg";
-const char* dashboardFrameFile = "http://192.168.1.201/IoTServer/dashboard_frame.jpg";
+//const char* dashboardFrameFile = "http://192.168.1.201/IoTServer/dashboard_frame.jpg";
+const char* dashboardFrameFile = "https://raw.githubusercontent.com/wpoosommai/JC3248W535-Without-LVGL/refs/heads/main/extras/images/dashboard_frame.jpg";
+
 
 // พิกัดวางไอคอนบนหน้า Dashboard แบบเฟรมล่าสุด
 // 1) พื้นที่ CONTROL & MENU : มุมบนซ้าย (20,350) ถึง มุมล่างขวา (300,391)
