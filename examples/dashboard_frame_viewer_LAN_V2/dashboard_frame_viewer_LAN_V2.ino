@@ -1,44 +1,61 @@
 /*
-  ======================================================================
-  Program : dashboard_frame_viewer_V1.ino
+  ====================================================================================================
+  Program : dashboard_frame_viewer_LAN_V2.ino
   Board   : ESP32-S3 + JC3248W535
   Display : 3.5" LCD 320x480
-  Library : WiFi, HTTPClient, Arduino_GFX, JPEGDecoder
-  Version : V1
-  Date    : 2026-03-29 21:20 ICT
+  Library : WiFi, WiFiClient, HTTPClient, Arduino_GFX, JPEGDecoder, JC3248W535
+  Version : V2
+  Date    : 2026-03-29 21:35 ICT
 
   สรุปการทำงานของโปรแกรม
-  1) เริ่มต้นจอ LCD ของบอร์ด JC3248W535
-  2) เปิดไฟ backlight ของจอ
-  3) เชื่อมต่อ WiFi ตามค่า SSID และ PASSWORD ที่กำหนด
-  4) ดาวน์โหลดภาพ JPEG จาก URL
+  1) เริ่มต้นจอ LCD และเปิด backlight ของบอร์ด JC3248W535
+  2) เชื่อมต่อ WiFi เข้าสู่เครือข่ายภายใน (LAN) ตามค่า SSID และ PASSWORD ที่กำหนด
+  3) ส่งคำขอ HTTP GET ไปยังเครื่องแม่ข่าย/เว็บเซิร์ฟเวอร์ในวงแลน
+  4) ดึงไฟล์ภาพ JPEG จากลิงก์ภายในเครือข่าย LAN
+     ตัวอย่าง:
      http://192.168.1.201/IoTServer/dashboard_frame.jpg
-  5) ถอดรหัสภาพด้วย JPEGDecoder
-  6) แสดงภาพเต็มจอ 320x480
-     - ถ้าภาพเล็กกว่าจอ จะจัดกึ่งกลาง
-     - ถ้าภาพใหญ่กว่าจอ จะ crop เฉพาะส่วนเกิน
-  7) แสดงผลข้อความสถานะผ่าน Serial Monitor เพื่อใช้ตรวจสอบการทำงาน
+  5) ตรวจสอบสถานะการตอบกลับของ HTTP เช่น HTTP code และ Content-Type
+  6) โหลดข้อมูลภาพมาเก็บในหน่วยความจำ โดยพยายามใช้ PSRAM ก่อนถ้ามี
+  7) ถอดรหัสภาพ JPEG ด้วย JPEGDecoder
+  8) วาดภาพลงจอเต็มพื้นที่ 320x480
+     - ถ้าภาพเล็กกว่าจอ จะจัดให้อยู่กึ่งกลาง
+     - ถ้าภาพใหญ่กว่าจอ จะตัดเฉพาะส่วนที่เกินขอบจอ
+  9) แสดงสถานะการทำงานผ่าน Serial Monitor เพื่อใช้ตรวจสอบการเชื่อมต่อและการโหลดภาพจาก LAN
 
   คุณสมบัติโปรแกรม
-  1) ตัดออกมาเฉพาะส่วนแสดงผลภาพจาก URL เท่านั้น
-  2) ไม่มี MQTT ไม่มี Touch ไม่มี Dashboard ไม่มี Slide Show
-  3) ใช้หน่วยความจำ PSRAM ก่อน ถ้ามี
-  4) รองรับการตรวจสอบ HTTP code และ Content-Type
-  5) มี comment อธิบายทุกส่วนเพื่อใช้ประกอบการเรียนการสอน
+  1) เป็นโปรแกรมตัวอย่างสำหรับ "การดึงภาพจากเครือข่าย LAN" โดยเฉพาะ
+  2) รองรับการโหลดภาพจาก Web Server / NAS / Computer Server ภายในวงแลน ที่ให้บริการผ่าน HTTP
+  3) ไม่มี MQTT ไม่มี Touch ไม่มี Dashboard logic และไม่มี Slide Show
+  4) มีการตรวจสอบ WiFi, HTTP response, JPEG header และขนาดภาพก่อนแสดงผล
+  5) ใช้ Canvas เพื่อลดอาการกระพริบขณะวาดภาพ
+  6) มี comment อธิบายแต่ละส่วน เพื่อใช้ประกอบการเรียนการสอน การวิจัย และการพัฒนาต่อยอด
 
   ข้อมูลนำเข้า (Input)
-  1) WiFi SSID
-  2) WiFi PASSWORD
-  3) IMAGE_URL
+  1) SSID      : ชื่อเครือข่าย WiFi/LAN ที่บอร์ดต้องเชื่อมต่อ
+  2) PASSWORD  : รหัสผ่านของเครือข่าย WiFi/LAN
+  3) IMAGE_URL : URL ภาพบนเครื่องแม่ข่ายในวงแลน
 
   รูปแบบคำสั่งควบคุม
   1) โปรแกรมนี้ไม่มีคำสั่ง JSON ควบคุม
-  2) เมื่อเปิดเครื่อง โปรแกรมจะเชื่อมต่อ WiFi และแสดงภาพอัตโนมัติ
+  2) เมื่อเปิดเครื่อง โปรแกรมจะเชื่อมต่อ WiFi แล้วดึงภาพจาก LAN อัตโนมัติ
+  3) การเปลี่ยนภาพ ให้แก้ค่าที่ตัวแปร IMAGE_URL
 
-  หมายเหตุ
-  1) ถ้าภาพสีเพี้ยน ให้ลองเปลี่ยน JPEG_USE_SWAPPED_BYTES ระหว่าง false/true
-  2) ไฟล์นี้เป็นเวอร์ชันย่อ เพื่อทดสอบเฉพาะการแสดงภาพจาก URL
-  ======================================================================
+  ตัวอย่าง URL ในวงแลน
+  1) http://192.168.1.201/IoTServer/dashboard_frame.jpg
+  2) http://192.168.1.50/images/test.jpg
+  3) http://server-room/display/welcome.jpg
+
+  หมายเหตุสำคัญ
+  1) โปรแกรมนี้ออกแบบสำหรับการดึงภาพจาก "เครือข่ายภายใน LAN" เป็นหลัก
+  2) เครื่องแม่ข่ายต้องเปิดใช้งาน HTTP และต้องสามารถเข้าถึงไฟล์ภาพได้จริงจากอุปกรณ์ในวงแลน
+  3) ถ้าทดสอบจากมือถือหรือคอมพิวเตอร์เข้า URL ได้ แต่บอร์ด ESP32 เข้าไม่ได้ ให้ตรวจสอบ
+     - WiFi ว่าอยู่เครือข่ายเดียวกันหรือไม่
+     - Firewall / Antivirus ของเครื่องแม่ข่าย
+     - สิทธิ์การเข้าถึงโฟลเดอร์หรือไฟล์
+     - การใช้ localhost ซึ่ง ESP32 จะมองไม่เห็น ต้องใช้ IP จริงของเครื่องแม่ข่ายแทน
+  4) ถ้าภาพสีเพี้ยน ให้ลองเปลี่ยน JPEG_USE_SWAPPED_BYTES ระหว่าง false/true
+  5) ไฟล์นี้เป็นเวอร์ชันทดสอบเฉพาะการดึงและแสดงภาพ JPEG จาก LAN
+  ====================================================================================================
 */
 
 #include <WiFi.h>
@@ -69,13 +86,16 @@
 #define JPEG_USE_SWAPPED_BYTES false
 
 // ======================================================================
-// ข้อมูลเครือข่าย
+// ข้อมูลเครือข่าย LAN/WiFi ที่ ESP32-S3 จะใช้เชื่อมต่อ
 // ======================================================================
 const char* ssid     = "SmartAgritronics";
 const char* password = "99999999";
 
 // ======================================================================
-// URL ของภาพที่ต้องการแสดง
+// URL ของภาพบนเครื่องแม่ข่ายในวงแลน
+// หมายเหตุ:
+// 1) ต้องใช้ IP จริงของเครื่องแม่ข่าย หรือชื่อ host ที่ resolve ได้ในเครือข่าย
+// 2) ห้ามใช้ localhost หรือ 127.0.0.1 เพราะ ESP32 จะมองเป็นตัวเอง ไม่ใช่เครื่องเซิร์ฟเวอร์
 // ======================================================================
 const char* IMAGE_URL = "http://192.168.1.201/IoTServer/dashboard_frame.jpg";
 
@@ -189,13 +209,14 @@ bool isJpegBuffer(const uint8_t* buf, size_t len) {
 
 // ======================================================================
 // เชื่อมต่อ WiFi แบบรอจนกว่าจะสำเร็จหรือครบเวลาที่กำหนด
+// หลังจากเชื่อมต่อสำเร็จ ESP32 จะสามารถเข้าถึงเครื่องแม่ข่ายในวงแลนได้
 // ======================================================================
 bool connectWiFi(uint32_t timeoutMs = 15000) {
   WiFi.mode(WIFI_STA);
   WiFi.setSleep(false);
   WiFi.begin(ssid, password);
 
-  Serial.print("Connecting WiFi");
+  Serial.print("Connecting WiFi/LAN");
   uint32_t startMs = millis();
 
   while (WiFi.status() != WL_CONNECTED && (millis() - startMs) < timeoutMs) {
@@ -218,7 +239,12 @@ bool connectWiFi(uint32_t timeoutMs = 15000) {
 }
 
 // ======================================================================
-// ดาวน์โหลดไฟล์ภาพจาก URL มาเก็บในหน่วยความจำ
+// ดาวน์โหลดไฟล์ภาพจาก URL ในวงแลนมาเก็บในหน่วยความจำ
+// ขั้นตอนหลัก:
+// 1) ตรวจว่ามีการเชื่อมต่อ WiFi แล้วหรือยัง
+// 2) เปิดการเชื่อมต่อ HTTP ไปยังเครื่องแม่ข่ายใน LAN
+// 3) ส่ง HTTP GET เพื่อขอดึงไฟล์ภาพ
+// 4) อ่านข้อมูลภาพเข้าหน่วยความจำจนจบไฟล์
 // ======================================================================
 bool downloadImageToMemory(const char* url, uint8_t** outBuf, size_t* outLen) {
   *outBuf = nullptr;
@@ -247,7 +273,7 @@ bool downloadImageToMemory(const char* url, uint8_t** outBuf, size_t* outLen) {
 
   http.setFollowRedirects(HTTPC_STRICT_FOLLOW_REDIRECTS);
   http.addHeader("Accept", "image/jpeg,image/*,*/*");
-  http.addHeader("User-Agent", "ESP32-JPEG-Viewer");
+  http.addHeader("User-Agent", "ESP32-JPEG-Viewer-LAN");
   http.addHeader("Connection", "close");
 
   Serial.print("HTTP GET URL = ");
@@ -472,7 +498,7 @@ bool renderJPEGFromDecoder() {
 }
 
 // ======================================================================
-// ดาวน์โหลดภาพ JPEG จาก URL และวาดเต็มจอ
+// ดาวน์โหลดภาพ JPEG จาก URL ใน LAN แล้ววาดเต็มจอ
 // ======================================================================
 bool showImageFromUrl(const char* url) {
   uint8_t* jpgBuf = nullptr;
@@ -544,7 +570,7 @@ void setup() {
   Serial.begin(115200);
   delay(200);
   Serial.println();
-  Serial.println("Program start: dashboard_frame_viewer_V1");
+  Serial.println("Program start: dashboard_frame_viewer_LAN_V2");
 
   if (!gfx->begin()) {
     Serial.println("gfx->begin() failed");
@@ -569,12 +595,12 @@ void setup() {
   }
 
   gfx->fillScreen(BLACK);
-  drawCenteredText("Loading image...", 220, YELLOW, 2);
+  drawCenteredText("Loading LAN image...", 220, YELLOW, 2);
   gfx->flush();
 
   if (!showImageFromUrl(IMAGE_URL)) {
     gfx->fillScreen(BLACK);
-    drawCenteredText("Image load failed", 205, RED, 2);
+    drawCenteredText("LAN image load failed", 205, RED, 2);
     drawCenteredText(IMAGE_URL, 240, WHITE, 1);
     gfx->flush();
   }
