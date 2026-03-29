@@ -792,7 +792,7 @@ void updateTouchInfo(bool touched, uint16_t x, uint16_t y)
   gfx->print("Y=");
   gfx->print(y);
 
-  gfx->fillRect(215, 445, 85, 26, COLOR_BLACK);
+  gfx->fillRect(215, 445, 85, 28, COLOR_BLACK);
   gfx->setTextSize(2);
   if (touched) {
     gfx->setTextColor(COLOR_GREEN, COLOR_BLACK);
