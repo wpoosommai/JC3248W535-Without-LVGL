@@ -92,7 +92,7 @@ const char* password = "99999999";
 // URL ของภาพที่ต้องการแสดง
 // รองรับทั้ง HTTP และ HTTPS
 // ======================================================================
-const char* IMAGE_URL = "https://raw.githubusercontent.com/wpoosommai/JC3248W535-Without-LVGL/main/extras/images/JapanGirl.jpg";
+const char* IMAGE_URL = "https://raw.githubusercontent.com/wpoosommai/JC3248W535-Without-LVGL/main/extras/images/JapanGirl320X480.jpg";
 
 // ======================================================================
 // ค่าควบคุมการเชื่อมต่อ
