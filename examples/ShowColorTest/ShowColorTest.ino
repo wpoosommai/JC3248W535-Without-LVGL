@@ -109,7 +109,7 @@ ColorItem colorList[] = {
 };
 
 const size_t COLOR_COUNT = sizeof(colorList) / sizeof(colorList[0]);
-const uint16_t SHOW_TIME_MS = 300;
+const uint16_t SHOW_TIME_MS = 1000;
 
 // -----------------------------
 // ฟังก์ชันแสดงสีเต็มจอ
