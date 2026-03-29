@@ -52,7 +52,7 @@ Version : V1.0.0
 */
 
 #include <Arduino_GFX_Library.h>
-#include "dashboard_frame.h"
+#include "dashboard_frame_V1.h"
 
 // ========================= กำหนดสี RGB565 =========================
 static const uint16_t BLACK   = 0x0000;
@@ -116,14 +116,7 @@ void setup() {
   showColorTest();
 
   Serial.println("Show dashboard_frame image...");
-  gfx->draw16bitRGBBitmap(
-    0,
-    0,
-    dashboard_frame,
-    DASHBOARD_FRAME_WIDTH,
-    DASHBOARD_FRAME_HEIGHT
-  );
-
+gfx->draw16bitRGBBitmap(0, 0, dashboard_frame, DASHBOARD_FRAME_WIDTH, DASHBOARD_FRAME_HEIGHT);
   Serial.println("Display complete.");
 }
 
