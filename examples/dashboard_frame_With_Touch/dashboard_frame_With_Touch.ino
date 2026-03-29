@@ -125,9 +125,9 @@ bool g_touchDetected = false;
 #define JPEG_USE_SWAPPED_BYTES false
 
 // ======================================================================
-// ข้อมูลเครือข่าย
+// ข้อมูลเครือข่ายws
 // ======================================================================
-const char* ssid     = "SmartAgritronics";
+const char* ssid     = "Prometalsheet_2.4GHz";
 const char* password = "99999999";
 
 // ======================================================================
@@ -783,36 +783,34 @@ void updateTouchInfo(bool touched, uint16_t x, uint16_t y)
   gfx->fillRect(450, 69, 50, 310, COLOR_BLACK);
   gfx->setTextColor(COLOR_CYAN, COLOR_BLACK);
   gfx->setTextSize(3);
-
-  gfx->setCursor(70-40, 450);
-  gfx->print("x=");
-  gfx->setCursor(70, 450);
+  
+  gfx->setCursor(12, 445);
+  gfx->print("X=");
   gfx->print(x);
 
-  gfx->setCursor(200-40, 450);
+  gfx->setCursor(112, 445);
   gfx->print("Y=");
-  gfx->setCursor(200, 450);
   gfx->print(y);
 
-  gfx->fillRect(30, 365, 260, 25, COLOR_BLACK);
+  gfx->fillRect(220, 440, 80, 20, COLOR_YELLOW);
   gfx->setTextSize(2);
   if (touched) {
     gfx->setTextColor(COLOR_GREEN, COLOR_BLACK);
-    gfx->setCursor(40, 365);
-    gfx->print("Touch = DETECTED");
+    gfx->setCursor(220, 450);
+    gfx->print("TOUCH");
 
     gfx->drawCircle(x, y, 10, COLOR_RED);
     gfx->drawCircle(x, y, 11, COLOR_RED);
     gfx->fillCircle(x, y, 3, COLOR_YELLOW);
+
   } else {
     gfx->setTextColor(COLOR_RED, COLOR_BLACK);
-    gfx->setCursor(40, 365);
-    gfx->print("Touch = RELEASED");
+    gfx->setCursor(220, 450);
+    gfx->print("RELEASE");
   }
 
   gfx->flush();   // <<< เพิ่มบรรทัดนี้
 }
-
 
 // ======================================================================
 // setup : เริ่มต้นระบบเพียงครั้งเดียว
@@ -869,8 +867,6 @@ void setup() {
   g_touchDetected = probeI2CDevice(TOUCH_ADDR);
   Serial.print("Touch controller @0x3B = ");
   Serial.println(g_touchDetected ? "DETECTED" : "NOT FOUND");
-
-
 
 }
 
