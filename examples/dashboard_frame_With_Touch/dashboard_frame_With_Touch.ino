@@ -780,19 +780,25 @@ bool getTouchPoint(uint16_t &x, uint16_t &y)
 
 void updateTouchInfo(bool touched, uint16_t x, uint16_t y)
 {
-  gfx->fillRect(70, 215, 170, 70, COLOR_BLACK);
+  gfx->fillRect(450, 69, 50, 310, COLOR_BLACK);
   gfx->setTextColor(COLOR_CYAN, COLOR_BLACK);
   gfx->setTextSize(3);
-  gfx->setCursor(70, 220);
+
+  gfx->setCursor(70-35, 450);
+  gfx->print("x=");
+  gfx->setCursor(70, 450);
   gfx->print(x);
-  gfx->setCursor(70, 255);
+
+  gfx->setCursor(200-35, 450);
+  gfx->print("Y=");
+  gfx->setCursor(200, 450);
   gfx->print(y);
 
   gfx->fillRect(30, 350, 260, 70, COLOR_BLACK);
   gfx->setTextSize(2);
   if (touched) {
     gfx->setTextColor(COLOR_GREEN, COLOR_BLACK);
-    gfx->setCursor(30, 355);
+    gfx->setCursor(40, 365);
     gfx->print("Touch = DETECTED");
 
     gfx->drawCircle(x, y, 10, COLOR_RED);
@@ -800,7 +806,7 @@ void updateTouchInfo(bool touched, uint16_t x, uint16_t y)
     gfx->fillCircle(x, y, 3, COLOR_YELLOW);
   } else {
     gfx->setTextColor(COLOR_RED, COLOR_BLACK);
-    gfx->setCursor(30, 355);
+    gfx->setCursor(40, 365);
     gfx->print("Touch = RELEASED");
   }
 
