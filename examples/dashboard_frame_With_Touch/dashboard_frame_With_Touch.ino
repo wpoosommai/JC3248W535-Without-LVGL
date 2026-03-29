@@ -784,17 +784,17 @@ void updateTouchInfo(bool touched, uint16_t x, uint16_t y)
   gfx->setTextColor(COLOR_CYAN, COLOR_BLACK);
   gfx->setTextSize(3);
 
-  gfx->setCursor(70-35, 450);
+  gfx->setCursor(70-40, 450);
   gfx->print("x=");
   gfx->setCursor(70, 450);
   gfx->print(x);
 
-  gfx->setCursor(200-35, 450);
+  gfx->setCursor(200-40, 450);
   gfx->print("Y=");
   gfx->setCursor(200, 450);
   gfx->print(y);
 
-  gfx->fillRect(30, 350, 260, 70, COLOR_BLACK);
+  gfx->fillRect(30, 365, 260, 25, COLOR_BLACK);
   gfx->setTextSize(2);
   if (touched) {
     gfx->setTextColor(COLOR_GREEN, COLOR_BLACK);
